@@ -28,7 +28,10 @@ jobs:
       with:
         java-version: '8'
         distribution: 'temurin'
+    - run: chmod +x gradlew
+    - run: chmod +x ./gradlew
     - name: Build with Gradle
+      run chmod +x gradlew
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
