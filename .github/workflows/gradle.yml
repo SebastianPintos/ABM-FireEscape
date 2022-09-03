@@ -28,8 +28,9 @@ jobs:
       with:
         java-version: '8'
         distribution: 'temurin'
+    - name: Add privileges
+      run: chmod +x gradlew
     - name: Build with Gradle
-      run chmod +x gradlew
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
