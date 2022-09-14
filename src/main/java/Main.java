@@ -1,7 +1,17 @@
+import db.PostgreSQL;
 import org.nlogo.headless.HeadlessWorkspace;
+
+import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] argv) {
+
+        PostgreSQL postgres = new PostgreSQL(5432, "postgres", "admin", "postgres");
+        try {
+            postgres.createTables();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         HeadlessWorkspace workspace =
                 HeadlessWorkspace.newInstance() ;
         try {
