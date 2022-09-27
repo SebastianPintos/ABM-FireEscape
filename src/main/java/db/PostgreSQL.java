@@ -24,9 +24,12 @@ public class PostgreSQL {
 
     public void createTables() throws SQLException {
         Statement stmt = instance.createStatement();
+        stmt.execute("""
+                    DROP TABLE IF EXISTS experiments
+                """);
         stmt.executeUpdate("""
                     CREATE TABLE experiments
-                    (ID INT PRIMARY KEY NOT NULL,
+                    (ID SERIAL PRIMARY KEY ,
                      NAME TEXT NOT NULL,
                      POPULATION_ALIVE INT,
                      POPULATION_DEAD INT,
@@ -40,7 +43,7 @@ public class PostgreSQL {
         Statement stmt = instance.createStatement();
         stmt.executeUpdate(
                 "INSERT INTO experiments(NAME, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION)" +
-                        "VALUES (" + e.name + "," + e.populationAlive + "," + e.populationDead + "," + e.collisions + "," + e.duration + ");");
+                        "VALUES ('"  + e.name + "', '"  + e.populationAlive + "', '"  + e.populationDead + "', '"  + e.collisions + "', '"  + e.duration + "')");
         stmt.close();
     }
 }

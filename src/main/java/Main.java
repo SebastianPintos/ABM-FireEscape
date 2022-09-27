@@ -1,4 +1,5 @@
 import db.PostgreSQL;
+import domain.Experiment;
 import org.nlogo.headless.HeadlessWorkspace;
 
 import java.sql.SQLException;
@@ -15,11 +16,20 @@ public class Main {
         HeadlessWorkspace workspace =
                 HeadlessWorkspace.newInstance() ;
         try {
-            workspace.open("src/main/resources/models/pps.nlogo");
-            workspace.command("set population 10");
-            workspace.command("setup");
-            workspace.command("repeat 50 [ go ]") ;
-            System.out.println(workspace.report("population"));
+            workspace.open("src/main/resources/models/experiment1.nlogo");
+            for(int i = 0; i < 100; i++) {
+                workspace.command("set population 200");
+                workspace.command("set fire 10");
+                workspace.command("set flame-rate 6");
+                workspace.command("setup");
+                workspace.command("repeat 1000 [ go ]") ;
+                Double scape = (Double) workspace.report("scape");
+                Double death = (Double) workspace.report("death");
+                Double ticks = (Double) workspace.report("final-ticks");
+
+                Experiment e = new Experiment("experiment1", scape.intValue(), death.intValue(), 0, ticks.intValue());
+                postgres.saveExperiment(e);
+            }
             workspace.dispose();
         }
         catch(Exception ex) {
