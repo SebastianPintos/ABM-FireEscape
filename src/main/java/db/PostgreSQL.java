@@ -31,6 +31,8 @@ public class PostgreSQL {
                     CREATE TABLE experiments
                     (ID SERIAL PRIMARY KEY ,
                      NAME TEXT NOT NULL,
+                     FIRE_PITS INT,
+                     FIRE_STRENGTH INT,
                      POPULATION_ALIVE INT,
                      POPULATION_DEAD INT,
                      COLLISIONS INT,
@@ -42,8 +44,8 @@ public class PostgreSQL {
     public void saveExperiment(Experiment e) throws SQLException {
         Statement stmt = instance.createStatement();
         stmt.executeUpdate(
-                "INSERT INTO experiments(NAME, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION)" +
-                        "VALUES ('"  + e.name + "', '"  + e.populationAlive + "', '"  + e.populationDead + "', '"  + e.collisions + "', '"  + e.duration + "')");
+                "INSERT INTO experiments(NAME, FIRE_PITS, FIRE_STRENGTH, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION)" +
+                        "VALUES ('"  + e.name + "','"  + e.firePits + "','"  + e.fireStrength + "', '"  + e.populationAlive + "', '"  + e.populationDead + "', '"  + e.collisions + "', '"  + e.duration + "')");
         stmt.close();
     }
 }
