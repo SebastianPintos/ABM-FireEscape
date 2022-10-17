@@ -15,15 +15,15 @@ public class Main {
         }
         HeadlessWorkspace workspace =
                 HeadlessWorkspace.newInstance();
-        int[] flameRates = {2, 5, 8, 11};
+        int[] flameRates = {5, 10, 15, 20};
 
         try {
             workspace.open("src/main/resources/models/experiment1.nlogo");
             for (int n : flameRates) {
                 for (int i = 0; i < 1000; i++) {
                     workspace.command("set population 200");
-                    workspace.command("set fire 10");
-                    workspace.command("set flame-rate " + n);
+                    workspace.command("set fire " + n);
+                    workspace.command("set flame-rate 5");
                     workspace.command("setup");
                     workspace.command("repeat 400 [ go ]");
                     Double scape = (Double) workspace.report("scape");

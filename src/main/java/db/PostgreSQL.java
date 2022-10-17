@@ -24,11 +24,8 @@ public class PostgreSQL {
 
     public void createTables() throws SQLException {
         Statement stmt = instance.createStatement();
-        stmt.execute("""
-                    DROP TABLE IF EXISTS experiments
-                """);
         stmt.executeUpdate("""
-                    CREATE TABLE experiments
+                    CREATE TABLE IF NOT EXISTS experiments
                     (ID SERIAL PRIMARY KEY ,
                      NAME TEXT NOT NULL,
                      FIRE_PITS INT,
