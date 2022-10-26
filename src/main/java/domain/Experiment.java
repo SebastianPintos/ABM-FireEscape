@@ -9,8 +9,10 @@ public class Experiment {
     public int populationDead;
     public int collisions;
     public int duration;
+    public Object[] scapes;
+    public Object[] deaths;
 
-    public Experiment(String name,int firePits, int fireStrength, int populationAlive, int populationDead, int collisions, int duration){
+    public Experiment(String name,int firePits, int fireStrength, int populationAlive, int populationDead, int collisions, int duration, Object[] scapes, Object[] deaths){
         this.name = name;
         this.firePits = firePits;
         this.fireStrength = fireStrength;
@@ -18,9 +20,11 @@ public class Experiment {
         this.populationDead = populationDead;
         this.collisions = collisions;
         this.duration = duration;
+        this.scapes = scapes;
+        this.deaths = deaths;
     }
 
-    public Experiment(int id, String name,int firePits, int fireStrength, int populationAlive, int populationDead, int collisions, int duration){
+    public Experiment(int id, String name,int firePits, int fireStrength, int populationAlive, int populationDead, int collisions, int duration, Object[] scapes, Object[] deaths){
         this.id = id;
         this.name = name;
         this.firePits = firePits;
@@ -29,5 +33,7 @@ public class Experiment {
         this.populationDead = populationDead;
         this.collisions = collisions;
         this.duration = duration;
+        this.scapes = scapes;
+        this.deaths = deaths;
     }
 }

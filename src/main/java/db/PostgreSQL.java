@@ -2,10 +2,7 @@ package db;
 
 import domain.Experiment;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class PostgreSQL {
     Connection instance;
@@ -25,7 +22,7 @@ public class PostgreSQL {
     public void createTables() throws SQLException {
         Statement stmt = instance.createStatement();
         stmt.executeUpdate("""
-                    CREATE TABLE IF NOT EXISTS experiments
+                    CREATE TABLE IF NOT EXISTS experiments1234
                     (ID SERIAL PRIMARY KEY ,
                      NAME TEXT NOT NULL,
                      FIRE_PITS INT,
@@ -33,16 +30,29 @@ public class PostgreSQL {
                      POPULATION_ALIVE INT,
                      POPULATION_DEAD INT,
                      COLLISIONS INT,
-                     DURATION INT)
+                     DURATION INT,
+                     SCAPES  integer[],
+                     DEATHS  integer[])
                 """);
         stmt.close();
     }
 
     public void saveExperiment(Experiment e) throws SQLException {
-        Statement stmt = instance.createStatement();
-        stmt.executeUpdate(
-                "INSERT INTO experiments(NAME, FIRE_PITS, FIRE_STRENGTH, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION)" +
-                        "VALUES ('"  + e.name + "','"  + e.firePits + "','"  + e.fireStrength + "', '"  + e.populationAlive + "', '"  + e.populationDead + "', '"  + e.collisions + "', '"  + e.duration + "')");
-        stmt.close();
+
+        PreparedStatement pstmt = instance.prepareStatement("INSERT INTO experiments1234(NAME, FIRE_PITS, FIRE_STRENGTH, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION, SCAPES, DEATHS)" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        Array scapes = instance.createArrayOf("int",e.scapes);
+        Array deaths = instance.createArrayOf("int",e.deaths);
+        pstmt.setString(1, e.name);
+        pstmt.setInt(2, e.firePits);
+        pstmt.setInt(3, e.fireStrength);
+        pstmt.setInt(4, e.populationAlive);
+        pstmt.setInt(5, e.populationDead);
+        pstmt.setInt(6, e.collisions);
+        pstmt.setInt(7, e.duration);
+        pstmt.setArray(8, scapes);
+        pstmt.setArray(9, deaths);
+        pstmt.executeUpdate();
+        pstmt.close();
     }
 }

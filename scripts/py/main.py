@@ -20,16 +20,36 @@ else:
 
 curr = conn.cursor()
 
+avgPerTick = []
 avg = []
 strength = [2, 5, 8, 11]
+deaths = []
 
 for p in strength:
-    curr.execute("SELECT * FROM experiments WHERE fire_strength=" + str(p) + ";")
+    curr.execute("SELECT * FROM experiments1234 WHERE fire_strength=" + str(p) + ";")
     data = curr.fetchall()
     count = 0
+    average = []
     for row in data:
         count += row[5]
+        if row[5] > 0:
+            average.append(1/(row[7]/row[5]))
+    sum = 0
+    print(average)
+    for n in average:
+        sum += n
+    avgPerTick.append(sum / len(average))
     avg.append(count / len(data) * 100 / 200)
+
+x = np.linspace(0,100,100)
+for n in range(0, len(avgPerTick)):
+    y = avgPerTick[n] * x * 100 / 200
+    plt.plot(x, y, label='Fire strength ' + str(strength[n]))
+plt.ylabel('Deaths in %')
+plt.xlabel('Ticks')
+plt.legend()
+plt.title('Deaths along time by fire strength')
+plt.savefig("averages.png")
 
 fig, ax = plt.subplots()  # Create a figure containing a single axes.
 plt.ylabel('Deaths in %')
@@ -57,24 +77,26 @@ ax.plot(pits, avg, marker='.', linewidth=3, markersize=18)  # Plot some data on 
 plt.savefig("plot-pits.png")
 
 
-x = np.array([5, 15, 25, 15, 45, 55]).reshape((-1, 1))
-y = np.array([5, 20, 14, 132, 22, 38])
-model = LinearRegression()
-model.fit(x, y)
 
-y_new = model.predict(x)
 
-plt.figure(figsize=(4, 3))
-ax = plt.axes()
-ax.scatter(x, y)
-ax.plot(x, y_new)
-
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-
-ax.axis('tight')
-
-plt.savefig("plot-test2.png")
+# x = np.array([5, 15, 12, 15, 45, 55]).reshape((-1, 1))
+# y = np.array([5, 20, 114, 12, 22, 138])
+# model = LinearRegression()
+# model.fit(x, y)
+#
+# y_new = model.predict(x)
+#
+# plt.figure(figsize=(4, 3))
+# ax = plt.axes()
+# ax.scatter(x, y)
+# ax.plot(x, y_new)
+#
+# ax.set_xlabel('x')
+# ax.set_ylabel('y')
+#
+# ax.axis('tight')
+#
+# plt.savefig("plot-test2.png")
 
 
 #### Extraer todos los datos  de las columnas ####
