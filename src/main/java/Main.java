@@ -22,6 +22,11 @@ public class Main {
         instances.stream().parallel().forEach(workspace -> {
             experiment1(postgres, workspace);
             experiment2(postgres, workspace);
+            try {
+                workspace.dispose();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         });
     }
 
@@ -66,7 +71,6 @@ public class Main {
                     postgres.saveExperiment(e);
                 }
             }
-            workspace.dispose();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -77,7 +81,7 @@ public class Main {
             workspace.open("src/main/resources/models/experiment1.nlogo");
             for (int n : fires) {
 
-                for (int i = 0; i < 1000; i++) {
+                for (int i = 0; i < 30; i++) {
                     workspace.command("set population 200");
                     workspace.command("set fire " + n);
                     workspace.command("set flame-rate 5");
@@ -103,7 +107,6 @@ public class Main {
                     postgres.saveExperiment(e);
                 }
             }
-            workspace.dispose();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
