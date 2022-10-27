@@ -59,14 +59,19 @@ ax.plot(strength, avg, marker='.', linewidth=3, markersize=18)  # Plot some data
 plt.savefig("plot-strength.png")
 
 avg = []
-pits = [5, 10, 15, 20]
+pits = [5, 10, 15]
+boxplotData = []
+
 
 for p in pits:
-    curr.execute("SELECT * FROM experiments WHERE fire_pits=" + str(p) + ";")
+    curr.execute("SELECT * FROM experiments1234 WHERE fire_pits=" + str(p) + ";")
     data = curr.fetchall()
     count = 0
+    allDeaths = []
     for row in data:
         count += row[5]
+        allDeaths.append(row[5])
+    boxplotData.append(allDeaths)
     avg.append(count / len(data) * 100 / 200)
 
 fig, ax = plt.subplots()  # Create a figure containing a single axes.
@@ -77,26 +82,18 @@ ax.plot(pits, avg, marker='.', linewidth=3, markersize=18)  # Plot some data on 
 plt.savefig("plot-pits.png")
 
 
+fig = plt.figure(figsize =(10, 7))
+ax = fig.add_subplot(111)
 
-
-# x = np.array([5, 15, 12, 15, 45, 55]).reshape((-1, 1))
-# y = np.array([5, 20, 114, 12, 22, 138])
-# model = LinearRegression()
-# model.fit(x, y)
-#
-# y_new = model.predict(x)
-#
-# plt.figure(figsize=(4, 3))
-# ax = plt.axes()
-# ax.scatter(x, y)
-# ax.plot(x, y_new)
-#
-# ax.set_xlabel('x')
-# ax.set_ylabel('y')
-#
-# ax.axis('tight')
-#
-# plt.savefig("plot-test2.png")
+# Creating plot
+plot = ax.boxplot(boxplotData, 0, '', patch_artist=True, zorder=0)
+colors = ['#0000FF', '#00FF00', '#FFFF00']
+ax.plot(avg, marker='.', linewidth=3, markersize=18, zorder=1)  # Plot some data on the axes.
+ax.set_xticklabels([2,7,9], rotation=45, fontsize=8)
+for patch, color in zip(plot['boxes'], colors):
+    patch.set(color='black', linewidth=1)
+    patch.set(facecolor=color)
+plt.savefig("boxplot.png")
 
 
 #### Extraer todos los datos  de las columnas ####
