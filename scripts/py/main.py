@@ -82,18 +82,13 @@ ax.plot(pits, avg, marker='.', linewidth=3, markersize=18)  # Plot some data on 
 plt.savefig("plot-pits.png")
 
 
-fig = plt.figure(figsize =(10, 7))
-ax = fig.add_subplot(111)
+fig, ax = plt.subplots()  # a figure with a single Axes
 
-# Creating plot
-plot = ax.boxplot(boxplotData, 0, '', patch_artist=True, zorder=0)
-colors = ['#0000FF', '#00FF00', '#FFFF00']
-ax.plot(avg, marker='.', linewidth=3, markersize=18, zorder=1)  # Plot some data on the axes.
-ax.set_xticklabels([2,7,9], rotation=45, fontsize=8)
-for patch, color in zip(plot['boxes'], colors):
-    patch.set(color='black', linewidth=1)
-    patch.set(facecolor=color)
-plt.savefig("boxplot.png")
+ax.boxplot(boxplotData,0, showfliers=False, positions=range(0,len(boxplotData)))
+ax.plot(avg, marker='.', linewidth=3, markersize=16)  # Plot some data on the axes.
+ax.set_xticklabels(pits)
+
+fig.savefig("boxplot.png")
 
 
 #### Extraer todos los datos  de las columnas ####
