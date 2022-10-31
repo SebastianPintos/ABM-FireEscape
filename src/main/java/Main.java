@@ -15,12 +15,12 @@ public class Main {
             e.printStackTrace();
         }
         ArrayList<HeadlessWorkspace> instances = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             HeadlessWorkspace workspace = HeadlessWorkspace.newInstance();
             instances.add(workspace);
         }
         instances.stream().parallel().forEach(workspace -> {
-            experiment1(postgres, workspace);
+
             experiment2(postgres, workspace);
             try {
                 workspace.dispose();
@@ -35,8 +35,8 @@ public class Main {
         try {
             workspace.open("src/main/resources/models/experiment1.nlogo");
             for (int n : flameRates) {
-                for (int i = 0; i < 30; i++) {
-                    workspace.command("set population 200");
+                for (int i = 0; i < 15; i++) {
+                    workspace.command("set population 500");
                     workspace.command("set fire 10" );
                     workspace.command("set flame-rate " + n);
                     workspace.command("setup");
@@ -81,8 +81,8 @@ public class Main {
             workspace.open("src/main/resources/models/experiment1.nlogo");
             for (int n : fires) {
 
-                for (int i = 0; i < 30; i++) {
-                    workspace.command("set population 200");
+                for (int i = 0; i < 15; i++) {
+                    workspace.command("set population 500");
                     workspace.command("set fire " + n);
                     workspace.command("set flame-rate 5");
                     workspace.command("setup");
