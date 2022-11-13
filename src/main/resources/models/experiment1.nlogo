@@ -7,6 +7,7 @@ globals
   scape
   death
   final-ticks
+  collisions
 ]
 people-own
 [
@@ -94,7 +95,12 @@ to go
   tick
 end
 to walk
-    ;; if at target, choose a new random target
+    let candidate one-of turtles-at 1 0
+  if candidate != nobody [
+    set collisions (collisions + 1)
+    stop
+  ]
+
     set target min-one-of houses [ distance myself ]
     face target
   while [[pcolor] of patch-ahead 1 = blue] [
@@ -124,11 +130,14 @@ to create-fire
   ]
 end
 to spread-flame  ;; patch procedure
-  if is-fire? [
+  if is-fire?
+  [
     set pcolor red
     set flame flame-rate
-    ask neighbors [
-      set pcolor red - 4
+    ask neighbors
+    [
+      set pcolor red - random 5
+
     ]
 
   ]
@@ -227,8 +236,8 @@ SLIDER
 population
 population
 0
-200
-200.0
+1000
+497.0
 1
 1
 personas
@@ -320,8 +329,8 @@ SLIDER
 flame-rate
 flame-rate
 0
-200000000000
-0.0
+10
+9.0
 1
 1
 NIL
