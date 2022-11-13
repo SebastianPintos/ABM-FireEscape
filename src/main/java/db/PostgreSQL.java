@@ -22,7 +22,7 @@ public class PostgreSQL {
     public void createTables() throws SQLException {
         Statement stmt = instance.createStatement();
         stmt.executeUpdate("""
-                    CREATE TABLE IF NOT EXISTS experiments1234
+                    CREATE TABLE IF NOT EXISTS experimentBoxPlot
                     (ID SERIAL PRIMARY KEY ,
                      NAME TEXT NOT NULL,
                      FIRE_PITS INT,
@@ -39,7 +39,7 @@ public class PostgreSQL {
 
     public void saveExperiment(Experiment e) throws SQLException {
 
-        PreparedStatement pstmt = instance.prepareStatement("INSERT INTO experiments1234(NAME, FIRE_PITS, FIRE_STRENGTH, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION, SCAPES, DEATHS)" +
+        PreparedStatement pstmt = instance.prepareStatement("INSERT INTO experimentBoxPlot(NAME, FIRE_PITS, FIRE_STRENGTH, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION, SCAPES, DEATHS)" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         Array scapes = instance.createArrayOf("int",e.scapes);
         Array deaths = instance.createArrayOf("int",e.deaths);

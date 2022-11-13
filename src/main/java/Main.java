@@ -20,8 +20,8 @@ public class Main {
             instances.add(workspace);
         }
         instances.stream().parallel().forEach(workspace -> {
-
-            experiment2(postgres, workspace);
+            experiment1(postgres, workspace);
+            //experiment2(postgres, workspace);
             try {
                 workspace.dispose();
             } catch (InterruptedException e) {
@@ -46,28 +46,17 @@ public class Main {
                     ArrayList<Integer> deaths = new ArrayList<>();
                     for(int j = 0; j < 400; j++){
                         workspace.command("go");
-                        Double scapesThisTick = (Double) workspace.report("scape") - lastScapes;
-                        Double deathsThisTick = (Double) workspace.report("death") - lastDeaths;
-                        if (scapesThisTick > 0){
-                            Double ticks = (Double) workspace.report("ticks") -1;
-                            for(int h = 0; h < scapesThisTick.intValue(); h++) scapes.add(ticks.intValue());
-                        }
-                        if (deathsThisTick > 0){
-                            Double ticks = (Double) workspace.report("ticks") -1;
-                            for(int h = 0; h < deathsThisTick.intValue(); h++) deaths.add(ticks.intValue());
-                        }
-                        if((Double) workspace.report("scape") + (Double) workspace.report("death") >= (Double) workspace.report("population")) break;
-                        lastScapes = (Double) workspace.report("scape");
-                        lastDeaths = (Double) workspace.report("death");
+                        if((Double) workspace.report("final-ticks") > 0) break;
                     }
                     Double scape = (Double) workspace.report("scape");
                     Double death = (Double) workspace.report("death");
                     Double ticks = (Double) workspace.report("final-ticks");
                     Double firePits = (Double) workspace.report("fire");
                     Double fireStrength = (Double) workspace.report("flame-rate");
+                    Double collisions = (Double) workspace.report("collisions");
 
-                    Experiment e = new Experiment("experiment1", firePits.intValue(), fireStrength.intValue(), scape.intValue(), death.intValue(),
-                            0, ticks.intValue(),scapes.toArray(), deaths.toArray());
+                    Experiment e = new Experiment("experiment2", firePits.intValue(), fireStrength.intValue(), scape.intValue(), death.intValue(),
+                            collisions.intValue(), ticks.intValue(), null, null);
                     postgres.saveExperiment(e);
                 }
             }
@@ -89,21 +78,18 @@ public class Main {
                     Integer last = 0;
                     ArrayList<Integer> scapes = new ArrayList<>();
                     for(int j = 0; j < 400; j++){
-                        Double scape = (Double) workspace.report("scape") - scapes.size();
                         workspace.command("go");
-                        if (last < scape){
-                            Double ticks = (Double) workspace.report("ticks") -1;
-                            for(int h = 0; h < scape.intValue() - last; h++) scapes.add(ticks.intValue());
-                        }
+                        if((Double) workspace.report("final-ticks") > 0) break;
                     }
                     Double scape = (Double) workspace.report("scape");
                     Double death = (Double) workspace.report("death");
                     Double ticks = (Double) workspace.report("final-ticks");
                     Double firePits = (Double) workspace.report("fire");
                     Double fireStrength = (Double) workspace.report("flame-rate");
+                    Double collisions = (Double) workspace.report("collisions");
 
-                    Experiment e = new Experiment("experiment1", firePits.intValue(), fireStrength.intValue(), scape.intValue(), death.intValue(),
-                            0, ticks.intValue(), scapes.toArray(), null);
+                    Experiment e = new Experiment("experiment2", firePits.intValue(), fireStrength.intValue(), scape.intValue(), death.intValue(),
+                            collisions.intValue(), ticks.intValue(), null, null);
                     postgres.saveExperiment(e);
                 }
             }

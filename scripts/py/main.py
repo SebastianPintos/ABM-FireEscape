@@ -52,8 +52,8 @@ def deathsByPits():
     plt.title('Porcentaje de muertes segun cant. de focos de fuego')
     plt.ylabel('Muertes en %')
     plt.xlabel('Focos de fuego')
-    plt.xticks(strength)
-    ax.plot(strength, avg, marker='.', linewidth=3, markersize=18)  # Plot some data on the axes.
+    plt.xticks(pits)
+    ax.plot(pits, avg, marker='.', linewidth=3, markersize=18)  # Plot some data on the axes.
     plt.savefig("plot-pits.png")
 
 
@@ -61,7 +61,7 @@ def boxplot():
     avg = []
     boxplotData = []
     for p in pits:
-        curr.execute("SELECT * FROM experimentBoxPlot WHERE fire_pits=" + str(p) + ";")
+        curr.execute("SELECT * FROM experimentBoxPlot WHERE name='experiment2' and fire_pits=" + str(p) + ";")
         data = curr.fetchall()
         count = 0
         allDeaths = []
@@ -80,7 +80,7 @@ def boxplot():
     ax.legend(['Promedio de muertes x experimento'], loc="upper left")
     ax.set_xticklabels(pits)
 
-    fig.savefig("boxplot.png")
+    fig.savefig("boxplot2.png")
 
 
 def get_connection():
