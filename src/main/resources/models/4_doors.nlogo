@@ -1,41 +1,214 @@
-globals [
-  door-x door-y
+breed
+[
+  people person
 ]
-
+globals
+[
+  scape
+  death
+  final-ticks
+  collisions
+  countt
+]
+people-own
+[
+  health
+  direction
+  target
+]
+patches-own [
+  flame
+  is-fire?
+]
+breed [houses house]
 to setup
   clear-all
-  create-turtles population
-  reset-ticks
-  ask patch door-x door-y [
-    sprout 1 [
-      set heading 0
-      set xcor 16
-      set ycor 6
-      set color orange
-      set shape "door"
-      set size 7
-      stamp
-      die
-    ]
+  setup-center
+  set-default-shape houses "house"
+  create-ordered-houses 1
+    [
+    set xcor -20
+    set ycor 8
+    set shape "door"
+    set size 10
   ]
+  create-houses 1
+    [
+    set xcor 20
+    set ycor 8
+    set shape "door"
+    set size 10
+  ]
+  create-ordered-houses 1
+    [
+    set xcor 20
+    set ycor -8
+    set shape "door"
+    set size 10
+    rt 90
+  ]
+  create-ordered-houses 1
+    [
+    set xcor -20
+    set ycor -8
+    set shape "door"
+    set size 10
+  ]
+  create-people population
+  [
+    set shape "person"
+    set health 1
+    setxy random-xcor random-ycor
+
+    while [pcolor != black] [
+      setxy random-xcor random-ycor
+    ]
+    set target one-of houses
+    face target
+  ]
+  ask patches [
+    set flame 0
+    set is-fire? false
+  ]
+  create-fire
+
+  ask patches [ spread-flame ]
+
+  reset-ticks
 end
 
 to go
-  ask turtles [
-    set shape "person"
-    fd 1            ;; forward 1 step
-    rt random 10    ;; turn right
-    lt random 10    ;; turn left
+   ask people [
+
+    if any? houses with [distance myself < 1.5]
+    [
+      set scape (scape + 1)
+      die ]
+    walk
+    eat-flame
+    maybe-die
+
+  ]
+  if (death + scape) = population and final-ticks = 0 [set final-ticks ticks]
+
+  diffuse flame 0.8
+
+  ask patches [ spread-flame ]
+  tick
+end
+to walk
+    let candidate one-of people-at 1 0
+  if candidate != nobody [
+    set collisions (collisions + 1)
+    stop
   ]
 
-  tick
+    set target min-one-of houses [ distance myself ]
+    face target
+  while [can-move? 1 and [pcolor] of patch-ahead 1 = blue] [
+     rt (90 + random 90)
+    ]
+    rt random 20
+    fd 1
+end
+
+to bounce  ;; turtle procedure
+  ; check: hitting left or right wall?
+  if abs [pxcor] of patch-ahead 1 = max-pxcor
+    ; if so, reflect heading around x axis
+    [ rt 90 fd 1]
+  ; check: hitting top or bottom wall?
+  if abs [pycor] of patch-ahead 1 = max-pycor
+    ; if so, reflect heading around y axis
+    [ rt 70 fd 1]
+end
+to eat-flame  ;; person procedure
+  if flame > 0.5 [
+    set health (health - (flame / 10))
+  ]
+end
+to create-fire
+  ask n-of fire patches [
+    set is-fire? true
+  ]
+end
+to spread-flame  ;; patch procedure
+  if is-fire?
+  [
+    set pcolor red
+    set flame flame-rate
+    ask neighbors
+    [
+      set pcolor red - random 5
+
+    ]
+
+  ]
+  ;;set pcolor scale-color red (sqrt flame - .1) 0 2
+end
+
+to maybe-die  ;; die if you run out of health
+  if health <= 0 [
+    set death (death + 1)
+    die ]
+end
+to setup-center
+
+  let halfedge int (20 / 2)
+
+
+  ask patches
+  [
+
+     if pxcor >= ( - halfedge) and pycor = ( 12 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = ( 10 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = ( 8 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = ( 6 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = ( 4 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = ( 2 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = ( 0 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = (- 2) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = (- 4) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = (- 6) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = (- 8) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = (- 10) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = (- 12) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = (- 14) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+     if pxcor >= ( - halfedge) and pycor = (- 16) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
+      [ set pcolor blue ]
+
+    ;; escenario
+    if pxcor >= ( - halfedge) and pycor = (20) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge)
+      [ set pcolor orange ]
+     if pxcor >= ( - halfedge) and pycor = (19) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge)
+      [ set pcolor orange ]
+     if pxcor >= ( - halfedge) and pycor = (18) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge)
+      [ set pcolor orange ]
+  ]
+
+
+  reset-ticks
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-647
-448
+304
+31
+845
+573
 -1
 -1
 13.0
@@ -45,25 +218,40 @@ GRAPHICS-WINDOW
 1
 1
 0
+0
+0
 1
-1
-1
--16
-16
--16
-16
+-20
+20
+-20
+20
 0
 0
 1
 ticks
 30.0
 
+SLIDER
+32
+80
+238
+113
+population
+population
+0
+1000
+503.0
+1
+1
+personas
+HORIZONTAL
+
 BUTTON
-28
-67
-91
-100
-NIL
+154
+161
+228
+194
+Setup
 setup
 NIL
 1
@@ -76,11 +264,11 @@ NIL
 1
 
 BUTTON
-107
-68
-170
-101
-NIL
+84
+161
+147
+194
+go
 go
 T
 1
@@ -93,19 +281,107 @@ NIL
 1
 
 SLIDER
-24
-26
-196
-59
-population
-population
+33
+34
+205
+67
+fire
+fire
 0
-100
-37.0
+10
+2.0
 1
 1
 NIL
 HORIZONTAL
+
+PLOT
+55
+406
+255
+556
+Population
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"alive" 1.0 0 -7500403 true "" "plot count people"
+
+MONITOR
+65
+354
+122
+399
+NIL
+scape
+17
+1
+11
+
+SLIDER
+50
+118
+222
+151
+flame-rate
+flame-rate
+0
+10
+5.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+199
+354
+256
+399
+NIL
+death
+17
+1
+11
+
+MONITOR
+125
+354
+196
+399
+NIL
+final-ticks
+17
+1
+11
+
+MONITOR
+65
+306
+125
+351
+NIL
+collisions
+17
+1
+11
+
+MONITOR
+134
+305
+191
+350
+NIL
+countt
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -224,9 +500,11 @@ false
 Circle -7500403 true true 0 0 300
 
 door
-true
+false
 0
-Rectangle -10899396 true false 135 60 165 240
+Rectangle -10899396 true false 135 75 165 210
+Rectangle -2674135 true false 120 120 120 165
+Rectangle -2674135 true false 135 120 150 165
 
 dot
 false

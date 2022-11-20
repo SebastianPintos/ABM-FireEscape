@@ -8,6 +8,7 @@ globals
   death
   final-ticks
   collisions
+  countt
 ]
 people-own
 [
@@ -29,21 +30,21 @@ to setup
     set xcor -20
     set ycor 8
     set shape "door"
-    set size 12
+    set size 10
   ]
   create-houses 1
     [
     set xcor 20
     set ycor 8
     set shape "door"
-    set size 12
+    set size 10
   ]
   create-ordered-houses 1
     [
     set xcor 20
     set ycor -8
     set shape "door"
-    set size 12
+    set size 10
     rt 90
   ]
   create-ordered-houses 1
@@ -51,7 +52,7 @@ to setup
     set xcor -20
     set ycor -8
     set shape "door"
-    set size 12
+    set size 10
   ]
   create-people population
   [
@@ -78,14 +79,15 @@ end
 
 to go
    ask people [
-    bounce
-    walk
-    eat-flame
-    maybe-die
-    if any? houses-on patch-ahead 1
+
+    if any? houses with [distance myself < 1.5]
     [
       set scape (scape + 1)
       die ]
+    walk
+    eat-flame
+    maybe-die
+
   ]
   if (death + scape) = population and final-ticks = 0 [set final-ticks ticks]
 
@@ -95,17 +97,12 @@ to go
   tick
 end
 to walk
-    let candidate one-of turtles-at 1 0
-  if candidate != nobody [
-    set collisions (collisions + 1)
-    stop
-  ]
-
     set target min-one-of houses [ distance myself ]
     face target
-  while [[pcolor] of patch-ahead 1 = blue] [
+  while [can-move? 1 and [pcolor] of patch-ahead 1 = blue] [
      rt (90 + random 90)
     ]
+    rt random 20
     fd 1
 end
 
@@ -215,8 +212,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -20
 20
@@ -237,7 +234,7 @@ population
 population
 0
 1000
-497.0
+503.0
 1
 1
 personas
@@ -261,10 +258,10 @@ NIL
 1
 
 BUTTON
-148
-231
-211
-264
+84
+161
+147
+194
 go
 go
 T
@@ -286,7 +283,7 @@ fire
 fire
 0
 10
-10.0
+2.0
 1
 1
 NIL
@@ -311,10 +308,10 @@ PENS
 "alive" 1.0 0 -7500403 true "" "plot count people"
 
 MONITOR
-62
-342
-119
-387
+65
+354
+122
+399
 NIL
 scape
 17
@@ -330,17 +327,17 @@ flame-rate
 flame-rate
 0
 10
-9.0
+5.0
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-157
-347
-214
-392
+199
+354
+256
+399
 NIL
 death
 17
@@ -348,12 +345,34 @@ death
 11
 
 MONITOR
-92
-315
-163
-360
+125
+354
+196
+399
 NIL
 final-ticks
+17
+1
+11
+
+MONITOR
+65
+306
+125
+351
+NIL
+collisions
+17
+1
+11
+
+MONITOR
+134
+305
+191
+350
+NIL
+countt
 17
 1
 11
