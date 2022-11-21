@@ -117,11 +117,11 @@ for p in strength:
     for n in average:
         sum += n
     avgPerTick.append(sum / len(average))
-    avg.append(count / len(data) * 100 / 200)
+    avg.append(count / len(data) * 100 / 500)
 
 x = np.linspace(0, 100, 100)
 for n in range(0, len(avgPerTick)):
-    y = avgPerTick[n] * x * 100 / 200
+    y = avgPerTick[n] * x * 100 / 500
     print(y)
     plt.plot(x, y, label='Potencia del fuego: ' + strength_labels[n])
 plt.title('Evolucion de muertes segun la fuerza del fuego')
