@@ -12,7 +12,7 @@ strength = [2, 5, 8, 11]
 def deathsByStrength():
     avg = []
     for p in strength:
-        curr.execute("SELECT * FROM experiments WHERE fire_strength=" + str(p) + ";")
+        curr.execute("SELECT * FROM experiments WHERE name='4_doors' and fire_pits=10 and fire_strength=" + str(p) + ";")
         data = curr.fetchall()
         count = 0
         average = []
@@ -23,7 +23,7 @@ def deathsByStrength():
         sum = 0
         for n in average:
             sum += n
-        avg.append(count / len(data) * 100 / 200)
+        avg.append(count / len(data) * 100 / 500)
     fig, ax = plt.subplots()  # Create a figure containing a single axes.
     plt.title('Porcentaje de muertes segun la fuerza del fuego')
     plt.ylabel('Muertes en %')
@@ -36,7 +36,7 @@ def deathsByStrength():
 def deathsByPits():
     avg = []
     for p in pits:
-        curr.execute("SELECT * FROM experiments WHERE fire_pits=" + str(p) + ";")
+        curr.execute("SELECT * FROM experiments WHERE name='4_doors' and fire_strength=5 and fire_pits=" + str(p) + ";")
         data = curr.fetchall()
         count = 0
         average = []
@@ -47,7 +47,7 @@ def deathsByPits():
         sum = 0
         for n in average:
             sum += n
-        avg.append(count / len(data) * 100 / 200)
+        avg.append(count / len(data) * 100 / 500)
     fig, ax = plt.subplots()  # Create a figure containing a single axes.
     plt.title('Porcentaje de muertes segun cant. de focos de fuego')
     plt.ylabel('Muertes en %')
@@ -61,7 +61,7 @@ def boxplot():
     avg = []
     boxplotData = []
     for p in pits:
-        curr.execute("SELECT * FROM experimentBoxPlot WHERE name='experiment2' and fire_pits=" + str(p) + ";")
+        curr.execute("SELECT * FROM experiments WHERE name='4_doors' and fire_strength=5 and fire_pits=" + str(p) + ";")
         data = curr.fetchall()
         count = 0
         allDeaths = []
@@ -105,7 +105,7 @@ avg = []
 deaths = []
 
 for p in strength:
-    curr.execute("SELECT * FROM experiments WHERE fire_strength=" + str(p) + ";")
+    curr.execute("SELECT * FROM experiments WHERE fire_pits=10 and fire_strength=" + str(p) + ";")
     data = curr.fetchall()
     count = 0
     average = []
