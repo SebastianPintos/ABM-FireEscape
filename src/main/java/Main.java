@@ -2,10 +2,11 @@ import db.PostgreSQL;
 import domain.Experiment;
 import org.nlogo.headless.HeadlessWorkspace;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] argv) throws InterruptedException {
+    public static void main(String[] argv) throws InterruptedException, IOException {
         int[] flameRates = {2, 5, 8, 11};
         int[] fires = {5, 10, 15, 20};
         PostgreSQL postgres = new PostgreSQL(5432, "postgres", "admin", "postgres");
@@ -18,12 +19,15 @@ public class Main {
         HeadlessWorkspace workspace2 = HeadlessWorkspace.newInstance();
         HeadlessWorkspace workspace3 = HeadlessWorkspace.newInstance();
 
+        workspace1.open("src/main/resources/models/2_doors.nlogo");
         experiment1(postgres, workspace1, fires, new int[]{5});
         experiment1(postgres, workspace1, new int[]{10}, flameRates);
 
+        workspace2.open("src/main/resources/models/4_doors_no_collisions.nlogo");
         experiment2(postgres, workspace2, fires, new int[]{5});
         experiment2(postgres, workspace2, new int[]{10}, flameRates);
 
+        workspace3.open("src/main/resources/models/4_doors.nlogo");
         experiment3(postgres, workspace3, fires, new int[]{5});
         experiment3(postgres, workspace3, new int[]{10}, flameRates);
 
@@ -34,7 +38,6 @@ public class Main {
 
     private static void experiment1(PostgreSQL postgres, HeadlessWorkspace workspace, int[] fires, int[] flameRates) {
         try {
-            workspace.open("src/main/resources/models/2_doors.nlogo");
             for (int n : fires) {
                 for (int k : flameRates) {
                     for (int i = 0; i < 200; i++) {
@@ -66,7 +69,6 @@ public class Main {
 
     private static void experiment2(PostgreSQL postgres, HeadlessWorkspace workspace, int[] fires, int[] flameRates) {
         try {
-            workspace.open("src/main/resources/models/4_doors_no_collisions.nlogo");
             for (int n : fires) {
                 for (int k : flameRates) {
                     for (int i = 0; i < 200; i++) {
@@ -98,7 +100,7 @@ public class Main {
 
     private static void experiment3(PostgreSQL postgres, HeadlessWorkspace workspace, int[] fires, int[] flameRates) {
         try {
-            workspace.open("src/main/resources/models/4_doors.nlogo");
+
             for (int n : fires) {
                 for (int k : flameRates) {
                     for (int i = 0; i < 200; i++) {

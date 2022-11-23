@@ -12,7 +12,8 @@ strength = [2, 5, 8, 11]
 def deathsByStrength():
     avg = []
     for p in strength:
-        curr.execute("SELECT * FROM experiments WHERE name='4_doors' and fire_pits=10 and fire_strength=" + str(p) + ";")
+        curr.execute(
+            "SELECT * FROM experiments WHERE name='4_doors' and fire_pits=10 and fire_strength=" + str(p) + ";")
         data = curr.fetchall()
         count = 0
         average = []
@@ -32,6 +33,7 @@ def deathsByStrength():
     ax.plot(strength, avg, marker='.', linewidth=3, markersize=18)  # Plot some data on the axes.
     ax.set_xticklabels(strength_labels)
     plt.savefig("plot-strength.png")
+
 
 def deathsByPits():
     avg = []
@@ -58,29 +60,68 @@ def deathsByPits():
 
 
 def boxplot():
+    experiments = ["4_doors", "2_doors", "4_doors_no_collisions"]
     avg = []
     boxplotData = []
-    for p in pits:
-        curr.execute("SELECT * FROM experiments WHERE name='4_doors' and fire_strength=5 and fire_pits=" + str(p) + ";")
-        data = curr.fetchall()
-        count = 0
-        allDeaths = []
-        for row in data:
-            count += row[5]
-            allDeaths.append(row[5])
-        boxplotData.append(allDeaths)
-        avg.append(count / len(data))
 
-    fig, ax = plt.subplots()  # a figure with a single Axes
+    for experiment in experiments:
+        for p in pits:
+            curr.execute(
+                f"SELECT * FROM experiments WHERE name='{experiment}' and fire_strength=5 and fire_pits=" + str(p) + ";")
+            data = curr.fetchall()
+            count = 0
+            allDeaths = []
+            for row in data:
+                count += row[5]
+                allDeaths.append(row[5])
+            boxplotData.append(allDeaths)
+            avg.append(count / len(data))
 
-    ax.boxplot(boxplotData, 0, showfliers=False, positions=range(0, len(boxplotData)))
-    plt.ylabel("Muertes")
-    plt.xlabel("Focos de fuego")
-    ax.plot(avg, marker='.', linewidth=3, markersize=16)
-    ax.legend(['Promedio de muertes x experimento'], loc="upper left")
-    ax.set_xticklabels(pits)
+        fig, ax = plt.subplots()  # a figure with a single Axes
 
-    fig.savefig("boxplot2.png")
+        ax.boxplot(boxplotData, 0, showfliers=False, positions=range(0, len(boxplotData)))
+        plt.title(f'Experimento: {experiment}')
+        plt.ylabel("Muertes")
+        plt.xlabel("Focos de fuego")
+        ax.legend(['Promedio de muertes x experimento'], loc="upper left")
+        ax.plot(avg, marker='.', linewidth=3, markersize=16)
+        ax.set_xticklabels(pits)
+        fig.savefig(f"boxplot_{experiment}.png")
+        avg.clear()
+        boxplotData.clear()
+
+def boxplotByStrength():
+    experiments = ["4_doors", "2_doors", "4_doors_no_collisions"]
+    avg = []
+    boxplotData = []
+
+    for experiment in experiments:
+        for s in strength:
+            curr.execute(
+                f"SELECT * FROM experiments WHERE name='{experiment}' and fire_strength={s} and fire_pits=10;")
+            data = curr.fetchall()
+            count = 0
+            allDeaths = []
+            for row in data:
+                count += row[5]
+                allDeaths.append(row[5])
+            boxplotData.append(allDeaths)
+            avg.append(count / len(data))
+            print(boxplotData)
+            print(f"experiment: {experiment}, potencia: {s}  - max: {max(boxplotData)}")
+
+        fig, ax = plt.subplots()  # a figure with a single Axes
+
+        ax.boxplot(boxplotData, 0, showfliers=False, positions=range(0, len(boxplotData)))
+        plt.title(f'Experimento: {experiment}')
+        plt.ylabel("Muertes")
+        plt.xlabel("Focos de fuego")
+        ax.legend(['Promedio de muertes x experimento'], loc="upper left")
+        ax.plot(avg, marker='.', linewidth=3, markersize=16)
+        ax.set_xticklabels(strength_labels)
+        fig.savefig(f"boxplot_{experiment}_strength.png")
+        avg.clear()
+        boxplotData.clear()
 
 
 def get_connection():
@@ -105,7 +146,7 @@ avg = []
 deaths = []
 
 for p in strength:
-    curr.execute("SELECT * FROM experiments WHERE fire_pits=10 and fire_strength=" + str(p) + ";")
+    curr.execute("SELECT * FROM experiments WHERE name='4_doors' and fire_pits=10 and fire_strength=" + str(p) + ";")
     data = curr.fetchall()
     count = 0
     average = []
@@ -122,7 +163,6 @@ for p in strength:
 x = np.linspace(0, 100, 100)
 for n in range(0, len(avgPerTick)):
     y = avgPerTick[n] * x * 100 / 500
-    print(y)
     plt.plot(x, y, label='Potencia del fuego: ' + strength_labels[n])
 plt.title('Evolucion de muertes segun la fuerza del fuego')
 plt.ylabel('Muertes en %')
@@ -131,5 +171,6 @@ plt.legend()
 plt.savefig("averages.png")
 
 boxplot()
+boxplotByStrength()
 deathsByStrength()
 deathsByPits()
