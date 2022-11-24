@@ -107,8 +107,6 @@ def boxplotByStrength():
                 allDeaths.append(row[5])
             boxplotData.append(allDeaths)
             avg.append(count / len(data))
-            print(boxplotData)
-            print(f"experiment: {experiment}, potencia: {s}  - max: {max(boxplotData)}")
 
         fig, ax = plt.subplots()  # a figure with a single Axes
 
@@ -123,6 +121,83 @@ def boxplotByStrength():
         avg.clear()
         boxplotData.clear()
 
+def timeToScape():
+    experiments = ["2_doors", "4_doors", "4_doors_no_collisions"]
+    avg = []
+    for experiment in experiments:
+        curr.execute(
+            f"SELECT * FROM experiments WHERE name='{experiment}'")
+        data = curr.fetchall()
+        ticks = []
+        for row in data:
+            ticks.append(row[7])
+        avg.append(np.mean(ticks))
+
+    fig, ax = plt.subplots()
+    ax.bar(experiments, avg, width=0.4, color=["green"])
+    ax.set_ylabel('Ticks')
+    ax.set_title('Tiempo de escape segun experimento')
+    plt.savefig("ticks.png")
+
+
+def compareExperiments():
+    experiments = ["2_doors", "4_doors", "4_doors_no_collisions"]
+    plotData = []
+    for experiment in experiments:
+        avg = []
+        for p in pits:
+            curr.execute(
+                f"SELECT * FROM experiments WHERE name='{experiment}' and fire_strength=5 and fire_pits=" + str(p) + ";")
+            data = curr.fetchall()
+            allDeaths = []
+            for row in data:
+                allDeaths.append(row[5])
+            avg.append(np.mean(allDeaths) * 100 / 500)
+        plotData.append(avg)
+
+    x = np.arange(len(pits))
+    width = 0.25
+    fig, ax = plt.subplots()
+    ax.bar(x - width - 0.05, plotData[0], width, label=experiments[0])
+    ax.bar(x + 0, plotData[1], width, label=experiments[1])
+    ax.bar(x + width + 0.05, plotData[2], width, label=experiments[2])
+    ax.set_ylabel('Muertes en %')
+    ax.set_xlabel('Focos de fuego')
+    ax.set_title('Comparación de % muertes por focos')
+    ax.set_xticks(x, pits)
+    ax.legend()
+    fig.tight_layout()
+    plt.savefig("compare_experiments.png")
+
+
+def compareExperimentsByStrength():
+    experiments = ["2_doors", "4_doors", "4_doors_no_collisions"]
+    plotData = []
+    for experiment in experiments:
+        avg = []
+        for s in strength:
+            curr.execute(
+                f"SELECT * FROM experiments WHERE name='{experiment}' and fire_strength={s} and fire_pits=10;")
+            data = curr.fetchall()
+            allDeaths = []
+            for row in data:
+                allDeaths.append(row[5])
+            avg.append(np.mean(allDeaths) * 100 / 500)
+        plotData.append(avg)
+
+    x = np.arange(len(strength))
+    width = 0.25  # the width of the bars
+    fig, ax = plt.subplots()
+    ax.bar(x - width - 0.05, plotData[0], width, label=experiments[0])
+    ax.bar(x + 0, plotData[1], width, label=experiments[1])
+    ax.bar(x + width + 0.05, plotData[2], width, label=experiments[2])
+    ax.set_ylabel('Muertes en %')
+    ax.set_xlabel('Potencia del fuego')
+    ax.set_title('Comparación de % muertes por intensidad')
+    ax.set_xticks(x, strength_labels)
+    ax.legend()
+    fig.tight_layout()
+    plt.savefig("compare_experiment_strength.png")
 
 def get_connection():
     try:
@@ -174,3 +249,6 @@ boxplot()
 boxplotByStrength()
 deathsByStrength()
 deathsByPits()
+compareExperiments()
+compareExperimentsByStrength()
+timeToScape()
