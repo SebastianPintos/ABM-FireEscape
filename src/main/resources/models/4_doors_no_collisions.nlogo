@@ -7,8 +7,6 @@ globals
   scape
   death
   final-ticks
-  collisions
-  countt
 ]
 people-own
 [
@@ -20,50 +18,48 @@ patches-own [
   flame
   is-fire?
 ]
-breed [houses house]
+breed [doors door]
 to setup
   clear-all
   setup-center
-  set-default-shape houses "house"
-  create-ordered-houses 1
+  set-default-shape doors "door"
+  create-ordered-doors 1
     [
     set xcor -20
     set ycor 8
-    set shape "door"
     set size 10
   ]
-  create-houses 1
+  create-doors 1
     [
     set xcor 20
     set ycor 8
-    set shape "door"
     set size 10
   ]
-  create-ordered-houses 1
+  create-ordered-doors 1
     [
     set xcor 20
     set ycor -8
-    set shape "door"
     set size 10
-    rt 90
   ]
-  create-ordered-houses 1
+  create-ordered-doors 1
     [
     set xcor -20
     set ycor -8
-    set shape "door"
     set size 10
   ]
+  ;; Create people
   create-people population
   [
     set shape "person"
     set health 1
     setxy random-xcor random-ycor
 
+    ;; Change position of person until color is black (no scenario or seats)
     while [pcolor != black] [
       setxy random-xcor random-ycor
     ]
-    set target one-of houses
+    ;; Make a person face a door
+    set target one-of doors
     face target
   ]
   ask patches [
@@ -71,42 +67,45 @@ to setup
     set is-fire? false
   ]
   create-fire
-
   ask patches [ spread-flame ]
-
   reset-ticks
 end
 
 to go
    ask people [
-
-    if any? houses with [distance myself < 1.5]
+    ;; if a door is in front of person, scape
+    if any? doors with [distance myself < 1.5]
     [
       set scape (scape + 1)
       die ]
+    ;; Procedures to move, receive damage from fire and die if necessary
     walk
     eat-flame
     maybe-die
 
   ]
+  ;; Save number of ticks when all population has scaped or died. Helpful to stop run in Java.
   if (death + scape) = population and final-ticks = 0 [set final-ticks ticks]
 
+  ;; Spread flame
   diffuse flame 0.8
 
   ask patches [ spread-flame ]
   tick
 end
 to walk
-    set target min-one-of houses [ distance myself ]
-    face target
+  ;; Face closest door
+  set target min-one-of doors [ distance myself ]
+  face target
+  ;; If cannot move because scenary or seats, rotate direction
   while [can-move? 1 and [pcolor] of patch-ahead 1 = blue] [
      rt (90 + random 90)
     ]
-    rt random 20
-    fd 1
+  rt random 20
+  fd 1
 end
 
-to bounce  ;; turtle procedure
+to bounce
   ; check: hitting left or right wall?
   if abs [pxcor] of patch-ahead 1 = max-pxcor
     ; if so, reflect heading around x axis
@@ -121,12 +120,14 @@ to eat-flame  ;; person procedure
     set health (health - (flame / 10))
   ]
 end
+
 to create-fire
   ask n-of fire patches [
     set is-fire? true
   ]
 end
-to spread-flame  ;; patch procedure
+
+to spread-flame
   if is-fire?
   [
     set pcolor red
@@ -134,11 +135,8 @@ to spread-flame  ;; patch procedure
     ask neighbors
     [
       set pcolor red - random 5
-
     ]
-
   ]
-  ;;set pcolor scale-color red (sqrt flame - .1) 0 2
 end
 
 to maybe-die  ;; die if you run out of health
@@ -147,13 +145,12 @@ to maybe-die  ;; die if you run out of health
     die ]
 end
 to setup-center
-
+  ;;scenario and seats setup
   let halfedge int (20 / 2)
-
 
   ask patches
   [
-
+    ;;seats
      if pxcor >= ( - halfedge) and pycor = ( 12 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
       [ set pcolor blue ]
      if pxcor >= ( - halfedge) and pycor = ( 10 ) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
@@ -185,7 +182,7 @@ to setup-center
      if pxcor >= ( - halfedge) and pycor = (- 16) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge) and pxcor != (   0) and pxcor != (   1) and pxcor != (   -1)
       [ set pcolor blue ]
 
-    ;; escenario
+    ;; scenario
     if pxcor >= ( - halfedge) and pycor = (20) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge)
       [ set pcolor orange ]
      if pxcor >= ( - halfedge) and pycor = (19) and pxcor <= (0 + halfedge) and pxcor >= ( - halfedge ) and pxcor <= ( 0 + halfedge)
@@ -234,7 +231,7 @@ population
 population
 0
 1000
-503.0
+500.0
 1
 1
 personas
@@ -282,8 +279,8 @@ SLIDER
 fire
 fire
 0
-10
-2.0
+20
+10.0
 1
 1
 NIL
@@ -362,17 +359,6 @@ MONITOR
 351
 NIL
 collisions
-17
-1
-11
-
-MONITOR
-134
-305
-191
-350
-NIL
-countt
 17
 1
 11
