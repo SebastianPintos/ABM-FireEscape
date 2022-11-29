@@ -57,7 +57,7 @@ public class Main {
                         Double collisions = (Double) workspace.report("collisions");
 
                         Experiment e = new Experiment("2_doors", firePits.intValue(), fireStrength.intValue(), scape.intValue(), death.intValue(),
-                                collisions.intValue(), ticks.intValue(), null, null);
+                                collisions.intValue(), ticks.intValue());
                         postgres.saveExperiment(e);
                     }
                 }
@@ -88,7 +88,7 @@ public class Main {
                         Double collisions = (Double) workspace.report("collisions");
 
                         Experiment e = new Experiment("4_doors_no_collisions", firePits.intValue(), fireStrength.intValue(), scape.intValue(), death.intValue(),
-                                collisions.intValue(), ticks.intValue(), null, null);
+                                collisions.intValue(), ticks.intValue());
                         postgres.saveExperiment(e);
                     }
                 }
@@ -100,7 +100,6 @@ public class Main {
 
     private static void experiment3(PostgreSQL postgres, HeadlessWorkspace workspace, int[] fires, int[] flameRates) {
         try {
-
             for (int n : fires) {
                 for (int k : flameRates) {
                     for (int i = 0; i < 200; i++) {
@@ -120,7 +119,7 @@ public class Main {
                         Double collisions = (Double) workspace.report("collisions");
 
                         Experiment e = new Experiment("4_doors", firePits.intValue(), fireStrength.intValue(), scape.intValue(), death.intValue(),
-                                collisions.intValue(), ticks.intValue(), null, null);
+                                collisions.intValue(), ticks.intValue());
                         postgres.saveExperiment(e);
                     }
                 }

@@ -30,17 +30,14 @@ public class PostgreSQL {
                      POPULATION_ALIVE INT,
                      POPULATION_DEAD INT,
                      COLLISIONS INT,
-                     DURATION INT,
-                     SCAPES  integer[],
-                     DEATHS  integer[])
+                     DURATION INT)
                 """);
         stmt.close();
     }
 
     public void saveExperiment(Experiment e) throws SQLException {
-
-        PreparedStatement pstmt = instance.prepareStatement("INSERT INTO experiments(NAME, FIRE_PITS, FIRE_STRENGTH, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION, SCAPES, DEATHS)" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        PreparedStatement pstmt = instance.prepareStatement("INSERT INTO experiments(NAME, FIRE_PITS, FIRE_STRENGTH, POPULATION_ALIVE, POPULATION_DEAD, COLLISIONS, DURATION)" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)");
         Array scapes = instance.createArrayOf("int",e.scapes);
         Array deaths = instance.createArrayOf("int",e.deaths);
         pstmt.setString(1, e.name);
@@ -50,8 +47,6 @@ public class PostgreSQL {
         pstmt.setInt(5, e.populationDead);
         pstmt.setInt(6, e.collisions);
         pstmt.setInt(7, e.duration);
-        pstmt.setArray(8, scapes);
-        pstmt.setArray(9, deaths);
         pstmt.executeUpdate();
         pstmt.close();
     }
